@@ -4,6 +4,8 @@
 #include <cmath>
 #include <chrono>
 #include <windows.h>
+#include <algorithm>
+#include <numeric>
 
 using namespace std;
 
@@ -22,6 +24,36 @@ public:
             x0 = x1;
             x1 = next;
         }
+
+        return seq;
+    }
+
+    vector<long long> generate1(int length) {
+        vector<long long> seq;
+        for (int i = 0; i < length; i++) {
+            long long next = (x0 + x1) % N;
+            seq.push_back(next);
+
+            x0 = x1;
+            x1 = next;
+        }
+
+        float M = accumulate(seq.begin(), seq.end(), 0LL) / seq.size();
+        cout << "МАТ ОЖ " << M << endl;
+        float D = 0;
+        for(int i = 0; i < seq.size(); i++){
+            D += pow((M - seq[i]), 2);
+        } 
+        D /= seq.size();
+        cout << "ДИСП " << D << endl;
+
+        auto minE = *min_element(seq.begin(), seq.end());
+        auto maxE = *max_element(seq.begin(), seq.end());
+
+        cout << "РАВНОМЕРНОЕ МАТ ОЖ " << (minE + maxE) / 2 << endl;
+        cout << "РАВНОМЕРНОЕ ДИСП " << pow(minE - maxE, 2) / 12 << endl;
+
+
         return seq;
     }
 };
@@ -144,13 +176,13 @@ long long generate_prime(int p_bits, Fibonacci& gen, int& total_tested, int& sma
 int main() {
     SetConsoleOutputCP(CP_UTF8);
 
-    Fibonacci gen(1234, 6890, 1000000007);
+    Fibonacci gen(1234, 6890, 100007);
     int bit_length = 30;
     
     int total = 0, filtered = 0;
     double test_time_ms = 0.0; 
     
-   
+    vector<long long> ans = gen.generate1(100000);
     long long prime = generate_prime(bit_length, gen, total, filtered, test_time_ms);
     
     cout << "Простое число: " << prime << endl;
